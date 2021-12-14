@@ -31,8 +31,7 @@ const Map<int, String> _kErrorValueToErrorDescription = {
 
 // The default error message, when the error is an empty string
 // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaError/message
-const String _kDefaultErrorMessage =
-    'No further diagnostic information can be determined or provided.';
+const String _kDefaultErrorMessage = 'No further diagnostic information can be determined or provided.';
 
 /// The web implementation of [VideoPlayerPlatform].
 ///
@@ -60,8 +59,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   }
 
   void _disposeAllPlayers() {
-    _videoPlayers.values
-        .forEach((_VideoPlayer videoPlayer) => videoPlayer.dispose());
+    _videoPlayers.values.forEach((_VideoPlayer videoPlayer) => videoPlayer.dispose());
     _videoPlayers.clear();
   }
 
@@ -86,11 +84,9 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
         uri = assetUrl;
         break;
       case DataSourceType.file:
-        return Future.error(UnimplementedError(
-            'web implementation of video_player cannot play local files'));
+        return Future.error(UnimplementedError('web implementation of video_player cannot play local files'));
       case DataSourceType.contentUri:
-        return Future.error(UnimplementedError(
-            'web implementation of video_player cannot play content uri'));
+        return Future.error(UnimplementedError('web implementation of video_player cannot play content uri'));
     }
 
     final _VideoPlayer player = _VideoPlayer(
@@ -160,8 +156,7 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
 class _VideoPlayer {
   _VideoPlayer({required this.uri, required this.textureId});
 
-  final StreamController<VideoEvent> eventController =
-      StreamController<VideoEvent>();
+  final StreamController<VideoEvent> eventController = StreamController<VideoEvent>();
 
   final String uri;
   final int textureId;
@@ -172,10 +167,8 @@ class _VideoPlayer {
   void setBuffering(bool buffering) {
     if (isBuffering != buffering) {
       isBuffering = buffering;
-      eventController.add(VideoEvent(
-          eventType: isBuffering
-              ? VideoEventType.bufferingStart
-              : VideoEventType.bufferingEnd));
+      eventController
+          .add(VideoEvent(eventType: isBuffering ? VideoEventType.bufferingStart : VideoEventType.bufferingEnd));
     }
   }
 
@@ -195,8 +188,7 @@ class _VideoPlayer {
     videoElement.setAttribute('autoplay', 'false');
 
     // TODO(hterkelsen): Use initialization parameters once they are available
-    ui.platformViewRegistry.registerViewFactory(
-        'videoPlayer-$textureId', (int viewId) => videoElement);
+    ui.platformViewRegistry.registerViewFactory('videoPlayer-$textureId', (int viewId) => videoElement);
 
     videoElement.onCanPlay.listen((dynamic _) {
       if (!isInitialized) {
@@ -294,11 +286,16 @@ class _VideoPlayer {
   }
 
   void sendInitialized() {
+    num duration = videoElement.duration;
+    if (duration == double.infinity) {
+      duration = 1;
+    }
+
     eventController.add(
       VideoEvent(
         eventType: VideoEventType.initialized,
         duration: Duration(
-          milliseconds: (videoElement.duration * 1000).round(),
+          milliseconds: (duration * 1000).round(),
         ),
         size: Size(
           videoElement.videoWidth.toDouble(),
